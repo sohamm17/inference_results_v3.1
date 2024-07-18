@@ -166,6 +166,7 @@ RUN cd /tmp \
     && export USE_CUDA=1 USE_CUDNN=1 \
     && export TORCH_CUDA_ARCH_LIST="Ampere Ada Hopper" \
     && export TORCH_CXX_FLAGS="-D_GLIBCXX_USE_CXX11_ABI=1" \
+    && git config --global core.compression 0 \
     && git clone -b v2.0.1 --recursive https://github.com/pytorch/pytorch \
     && cd pytorch \
     && python3 -m pip install -r requirements.txt \
@@ -182,39 +183,16 @@ RUN cd /tmp \
     && export USE_CUDA=1 USE_CUDNN=1 \
     && export TORCH_CUDA_ARCH_LIST="Ampere Ada Hopper" \
     && export TORCH_CXX_FLAGS="-D_GLIBCXX_USE_CXX11_ABI=1" \
+    && python3 -m pip install --upgrade pip \
+    && pip uninstall -y setuptools packaging \
+    && pip install setuptools==69.5.1 \
+    && pip install --upgrade packaging \
+    && git config --global core.compression 0 \
     && git clone -b v0.15.2 https://github.com/pytorch/vision.git \
     && cd vision \
     && python setup.py bdist_wheel \
     && cd dist \
     && python3 -m pip install torchvision-0.15*linux_aarch64.whl \
-    && cd -
-RUN cd /tmp \
-    && export CUDA_BIN_PATH="/usr/local/cuda/" \
-    && export CUDACXX="/usr/local/cuda/bin/nvcc" \
-    && export CUDNN_INCLUDE_DIR="/usr/local/cuda/include/" \
-    && export CUDNN_LIBRARY="/usr/local/cuda/lib64/" \
-    && export TORCH_CUDA_ARCH_LIST="Ampere Ada Hopper" \
-    && export TORCH_CXX_FLAGS="-D_GLIBCXX_USE_CXX11_ABI=1" \
-    && git clone --recursive https://github.com/pytorch/FBGEMM.git \
-    && cd FBGEMM/fbgemm_gpu \
-    && git submodule sync \
-    && git submodule update --init --recursive \
-    && python setup.py install \
-    && cd -
-RUN cd /tmp \
-    && export CUDA_NVCC_EXECUTABLE="/usr/local/cuda/bin/nvcc" \
-    && export CUDA_HOME="/usr/local/cuda" \
-    && export CUDNN_INCLUDE_PATH="/usr/local/cuda/include/" \
-    && export CUDNN_LIBRARY_PATH="/usr/local/cuda/lib64/" \
-    && export LIBRARY_PATH="$LIBRARY_PATH:/usr/local/cuda/lib64" \
-    && export USE_CUDA=1 USE_CUDNN=1 \
-    && export TORCH_CUDA_ARCH_LIST="Ampere Ada Hopper" \
-    && export TORCH_CXX_FLAGS="-D_GLIBCXX_USE_CXX11_ABI=1" \
-    && git clone -b v0.4.0 --recursive https://github.com/pytorch/torchrec \
-    && cd torchrec \
-    && python setup.py bdist_wheel \
-    && cd dist \
-    && python3 -m pip install torchrec-0.4.0-py3-none-any.whl \
     && cd -
 RUN python3 -m pip install torchsnapshot==0.1.0
 RUN conda config --env --remove-key always_yes

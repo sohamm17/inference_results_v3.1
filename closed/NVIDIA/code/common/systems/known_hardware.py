@@ -193,7 +193,7 @@ class KnownGPU(MatchableEnum):
                     MATCH_ANY,
                     MATCH_ANY,
                     72)
-    Orin = GPU(AliasedName("Orin", patterns=(re.compile(r"(Jetson AGX Orin)|(NVIDIA Orin Jetson-Small Developer Kit)"),)),
+    Orin = GPU(AliasedName("Orin", patterns=(re.compile(r"(Jetson AGX Orin)|(NVIDIA Orin Jetson-Small Developer Kit)|(NVIDIA IGX Orin Development Kit)"),)),
                AcceleratorType.Integrated,
                MATCH_ANY,
                MATCH_ANY,

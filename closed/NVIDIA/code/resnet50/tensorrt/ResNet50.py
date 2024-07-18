@@ -186,7 +186,8 @@ class ResNet50EngineBuilderOp(CalibratableTensorRTEngine,
         else:
             subnet = None
         model = rn50_gs.create_onnx_model(subnetwork=subnet)
-        success = parser.parse(onnx._serialize(model))
+        #success = parser.parse(onnx._serialize(model))
+        success = parser.parse(model.SerializeToString())
         if not success:
             err_desc = parser.get_error(0).desc()
             raise RuntimeError(f"ResNet50 onnx model processing failed! Error: {err_desc}")

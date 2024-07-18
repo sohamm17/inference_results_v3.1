@@ -155,7 +155,7 @@ class RetinanetEngineBuilderOp(CalibratableTensorRTEngine,
                  # TODO: Legacy value - Remove after refactor is done.
                  config_ver: str = "default",
                  # TODO: This should be a relative path within the ScratchSpace.
-                 model_path: str = "build/models/retinanet-resnext50-32x4d/retinanet-fpn-torch2.1-postprocessed.onnx",
+                 model_path: str = "build/models/retinanet-resnext50-32x4d/retinanet-fpn-torch2.3-postprocessed.onnx",
                  # Override the normal default values
                  workspace_size: int = 8 << 30,
                  calib_batch_size: int = 10,
@@ -220,7 +220,8 @@ class RetinanetEngineBuilderOp(CalibratableTensorRTEngine,
         else:
             subnet = None
         model = retinanet_gs.create_onnx_model(subnetwork=subnet)
-        success = parser.parse(onnx._serialize(model))
+        # success = parser.parse(onnx._serialize(model))
+        success = parser.parse(model.SerializeToString())
         if not success:
             err_desc = parser.get_error(0).desc()
             raise RuntimeError(f"Retinanet onnx model processing failed! Error: {err_desc}")

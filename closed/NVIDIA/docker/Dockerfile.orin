@@ -17,7 +17,8 @@ FROM ${BASE_IMAGE}
 
 SHELL ["/bin/bash", "-c"]
 
-ARG CUDA_VER=11.4
+#ARG CUDA_VER=11.4
+ARG CUDA_VER=12.2
 ARG USE_NIGHTLY=1
 ARG USE_NGC=0
 ARG EXTERNAL_USER=0
@@ -45,26 +46,26 @@ RUN apt install -y --no-install-recommends pkg-config zip g++ zlib1g-dev unzip r
 # use 'docker system prune' to remove dangle images/caches
 # use '--all' flag will purge all
 WORKDIR /tmp
-RUN if [[ ${USE_NGC} = 0 ]]; then \
-    wget -nv http://cuda-repo/release-candidates/kitpicks/cuda-r11-4-tegra/11.4.19/005/local_installers/cuda-repo-l4t-11-4-local_11.4.19-1_arm64.deb \
-    && echo "46997a866fea997479258c54ade94a4189771b4e393285e876864ae18c64c206  cuda-repo-l4t-11-4-local_11.4.19-1_arm64.deb" | sha256sum --check \
-    && dpkg -i ./cuda-repo-l4t-11-4-local_11.4.19-1_arm64.deb \
-    && rm cuda*.deb; fi
-RUN if [[ ${USE_NGC} = 0 ]]; then \
-    cp /var/cuda-repo-l4t-11-4-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
-    && apt update \
-    && apt install -y cuda-toolkit-*; fi
+#RUN if [[ ${USE_NGC} = 0 ]]; then \
+#    wget -nv http://cuda-repo/release-candidates/kitpicks/cuda-r11-4-tegra/11.4.19/005/local_installers/cuda-repo-l4t-11-4-local_11.4.19-1_arm64.deb \
+#    && echo "46997a866fea997479258c54ade94a4189771b4e393285e876864ae18c64c206  cuda-repo-l4t-11-4-local_11.4.19-1_arm64.deb" | sha256sum --check \
+#    && dpkg -i ./cuda-repo-l4t-11-4-local_11.4.19-1_arm64.deb \
+#    && rm cuda*.deb; fi
+#RUN if [[ ${USE_NGC} = 0 ]]; then \
+#    cp /var/cuda-repo-l4t-11-4-local/cuda-*-keyring.gpg /usr/share/keyrings/ \
+#    && apt update \
+#    && apt install -y cuda-toolkit-*; fi
 
 # install cudnn 8.6 (takes ~4 mins)
-RUN if [[ ${USE_NGC} = 0 ]]; then \
-    wget -nv http://cuda-repo/release-candidates/kitpicks/cudnn-v8-6-tegra/8.6.0.174/001/local_installers/cudnn-local-tegra-repo-ubuntu2004-8.6.0.174_1.0-1_arm64.deb \
-    && echo "7f7e1fd18549d3a95b6148da64675055860e495800bac15ea35670ba692f8a41  cudnn-local-tegra-repo-ubuntu2004-8.6.0.174_1.0-1_arm64.deb" | sha256sum --check \
-    && dpkg -i ./cudnn-local-tegra-repo-ubuntu2004-8.6.0.174_1.0-1_arm64.deb \
-    && rm cudnn*.deb; fi
-RUN if [[ ${USE_NGC} = 0 ]]; then \
-    cp /var/cudnn-local-tegra-repo-ubuntu2004-8.6.0.174/cudnn-local-tegra-A4C79EB5-keyring.gpg /usr/share/keyrings/ \
-    && apt update \
-    && apt install -y libcudnn8*; fi
+#RUN if [[ ${USE_NGC} = 0 ]]; then \
+#    wget -nv http://cuda-repo/release-candidates/kitpicks/cudnn-v8-6-tegra/8.6.0.174/001/local_installers/cudnn-local-tegra-repo-ubuntu2004-8.6.0.174_1.0-1_arm64.deb \
+#    && echo "7f7e1fd18549d3a95b6148da64675055860e495800bac15ea35670ba692f8a41  cudnn-local-tegra-repo-ubuntu2004-8.6.0.174_1.0-1_arm64.deb" | sha256sum --check \
+#    && dpkg -i ./cudnn-local-tegra-repo-ubuntu2004-8.6.0.174_1.0-1_arm64.deb \
+#    && rm cudnn*.deb; fi
+#RUN if [[ ${USE_NGC} = 0 ]]; then \
+#    cp /var/cudnn-local-tegra-repo-ubuntu2004-8.6.0.174/cudnn-local-tegra-A4C79EB5-keyring.gpg /usr/share/keyrings/ \
+#    && apt update \
+#    && apt install -y libcudnn8*; fi
 
 # install TRT 8.5.2 (takes ~8 mins)
 ARG TRT_DEB_URL=http://cuda-repo/release-candidates/Libraries/TensorRT/v8.5/8.5.2.2-aa56a885/11.4-r470/l4t-aarch64/deb/
@@ -73,22 +74,22 @@ ARG TRT_MINOR_VER=5
 ARG TRT_PATCH_VER=2
 ARG TRT_QA_VER=2
 ARG TRT_VER=${TRT_MAJOR_VER}.${TRT_MINOR_VER}.${TRT_PATCH_VER}
-RUN if [[ ${USE_NGC} = 0 ]]; then \
-    install_deb_pkg() { wget -nv $TRT_DEB_URL/$1 -O $1 && dpkg -i $1 && rm $1; } \
-    && install_deb_pkg libnvinfer${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvinfer-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvinfer-plugin${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvinfer-plugin-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvparsers${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvparsers-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvonnxparsers${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvonnxparsers-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg python3-libnvinfer_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg python3-libnvinfer-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg graphsurgeon-tf_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg uff-converter-tf_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && install_deb_pkg libnvinfer-bin_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
-    && unset -f install_deb_pkg; fi
+#RUN if [[ ${USE_NGC} = 0 ]]; then \
+#    install_deb_pkg() { wget -nv $TRT_DEB_URL/$1 -O $1 && dpkg -i $1 && rm $1; } \
+#    && install_deb_pkg libnvinfer${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvinfer-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvinfer-plugin${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvinfer-plugin-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvparsers${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvparsers-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvonnxparsers${TRT_MAJOR_VER}_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvonnxparsers-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg python3-libnvinfer_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg python3-libnvinfer-dev_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg graphsurgeon-tf_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg uff-converter-tf_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && install_deb_pkg libnvinfer-bin_${TRT_VER}-1+cuda${CUDA_VER}_arm64.deb \
+#    && unset -f install_deb_pkg; fi
 
 # matplotlib dependencies for tegrastats
 RUN apt install -y libfreetype6-dev libpng-dev  \
@@ -108,19 +109,20 @@ RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade setuptools wheel virtualenv \
     && python3 -m pip install Cython==0.29.23 \
     && python3 -m pip install numpy==1.22.4 \
-    && python3 -m pip uninstall -y pycuda && python3 -m pip install pycuda==2021.1 \
+    # && python3 -m pip uninstall -y pycuda && python3 -m pip install pycuda==2021.1 \
+    && python3 -m pip uninstall -y pycuda && python3 -m pip install pycuda==2023.1 \
     && rm -rf /usr/lib/python3/dist-packages/yaml /usr/lib/python3/dist-packages/PyYAML*
 
 # scikit-learn will complain about missing scipy non-determistically when specified in requirements.txt, since they for
 # some reason put scipy under 'extra_requires' instead of 'install_requires': https://stackoverflow.com/a/33953462
 # Workaround by manually installing prior to requirements.txt.
-RUN python3 -m pip install scipy==1.6.3
+RUN python3 -m pip install scipy==1.7.3
 
 # Work around for conditional copy
 COPY requirements.orin.txt nvmitten-${MITTEN_VER}-cp38-cp38-linux_aarch64.whl* /tmp
 # NGC Image stores packages in /opt/
-RUN if [[ ${USE_NGC} = 1 ]]; then \
-    mv /opt/nvmitten-${MITTEN_VER}-cp38-cp38-linux_aarch64.whl /tmp; fi
+#RUN if [[ ${USE_NGC} = 1 ]]; then \
+    #mv /opt/nvmitten-${MITTEN_VER}-cp38-cp38-linux_aarch64.whl /tmp; fi
 WORKDIR /tmp
 
 # Install required dependencies (takes ~5 min)
@@ -148,58 +150,63 @@ RUN apt install -y libprotobuf-dev \
     && git checkout release/8.0 \
     && cd tools/onnx-graphsurgeon \
     && make build \
-    && python3 -m pip install --no-deps -t /usr/local/lib/python3.8/dist-packages --force-reinstall dist/*.whl \
+    && python3 -m pip install --no-deps -t /usr/local/lib/python3.10/dist-packages --force-reinstall dist/*.whl \
     && popd \
     && rm -rf TensorRT
 
 # For public users, build prebuilt dependencies from source
 # DALI v1.19
 # building from scratch takes ~45 minutes
-COPY dali_orin.patch /tmp
-RUN if [ $EXTERNAL_USER != 0 ]; then \
-    rm -rf protobuf-cpp-3.11.1.tar.gz \
-    && apt-get install -y libjpeg-dev libtiff-dev libopencv-dev \
-    && ln -s /usr/lib/aarch64-linux-gnu/libclang-10.so.1 /usr/lib/aarch64-linux-gnu/libclang.so \
-    && git config --global user.email "abc@abc.com" \
-    && git config --global user.name "abc" \
-    && wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.1/protobuf-cpp-3.11.1.tar.gz \
-    && tar -xzf protobuf-cpp-3.11.1.tar.gz \
-    && rm protobuf-cpp-3.11.1.tar.gz \
-    && cd protobuf-3.11.1 \
-    && ./configure CXXFLAGS="-fPIC" --prefix=/usr/local --disable-shared \
-    && make -j$(nproc) \
-    && make install \
-    && ldconfig \
-    && cd /tmp \
-    && rm -rf protobuf-3.11.1 \
-    && cd /usr/local \
-    && rm -rf DALI \
-    && git clone -b release_v1.19 --recursive https://github.com/NVIDIA/DALI \
-    && cd DALI \
-    && git apply /tmp/dali_orin.patch \
-    && mkdir build \
-    && cd build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCUDA_TARGET_ARCHS="87" \
-       -DBUILD_PYTHON=ON -DBUILD_TEST=OFF -DBUILD_BENCHMARK=OFF -DBUILD_NVTX=OFF -DBUILD_LMDB=OFF -DBUILD_LIBTIFF=OFF -DBUILD_LIBSND=OFF -DBUILD_CUFILE=OFF \
-       -DBUILD_LIBSND=OFF -DBUILD_LIBTAR=OFF -DBUILD_FFTS=ON -DBUILD_NVOF=OFF -DBUILD_NVDEC=OFF -DBUILD_NVJPEG=OFF -DBUILD_NVJPEG2K=OFF -DBUILD_NVML=OFF\
-       -DVERBOSE_LOGS=OFF -DWERROR=OFF -DBUILD_WITH_ASAN=OFF -DBUILD_JPEG_TURBO=ON -DProtobuf_PROTOC_EXECUTABLE=/usr/local/bin/protoc .. \
-    && make -j$(nproc) \
-    && make install \
-    && python3 -m pip install dali/python/ \
-    && mv /usr/local/DALI/build/dali/python/nvidia/dali /tmp/dali \
-    && rm -rf /usr/local/DALI \
-    && mkdir -p /usr/local/DALI/build/dali/python/nvidia/ \
-    && mv /tmp/dali /usr/local/DALI/build/dali/python/nvidia/; fi
+#COPY dali_orin.patch /tmp
+#RUN if [ $EXTERNAL_USER != 0 ]; then \
+#    rm -rf protobuf-cpp-3.11.1.tar.gz \
+#    && apt-get install -y libjpeg-dev libtiff-dev libopencv-dev \
+#    && ln -s /usr/lib/aarch64-linux-gnu/libclang-10.so.1 /usr/lib/aarch64-linux-gnu/libclang.so \
+#    && git config --global user.email "abc@abc.com" \
+#    && git config --global user.name "abc" \
+#    && wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.1/protobuf-cpp-3.11.1.tar.gz \
+#    && tar -xzf protobuf-cpp-3.11.1.tar.gz \
+#    && rm protobuf-cpp-3.11.1.tar.gz \
+#    && cd protobuf-3.11.1 \
+#    && ./configure CXXFLAGS="-fPIC" --prefix=/usr/local --disable-shared \
+#    && make -j$(nproc) \
+#    && make install \
+#    && ldconfig \
+#    && cd /tmp \
+#    && rm -rf protobuf-3.11.1 \
+#    && cd /usr/local \
+#    && rm -rf DALI \
+#    && git clone -b release_v1.19 --recursive https://github.com/NVIDIA/DALI \
+#    && cd DALI \
+#    && git apply /tmp/dali_orin.patch \
+#    && mkdir build \
+#    && cd build \
+#    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCUDA_TARGET_ARCHS="87" \
+#       -DBUILD_PYTHON=ON -DBUILD_TEST=OFF -DBUILD_BENCHMARK=OFF -DBUILD_NVTX=OFF -DBUILD_LMDB=OFF -DBUILD_LIBTIFF=OFF -DBUILD_LIBSND=OFF -DBUILD_CUFILE=OFF \
+#       -DBUILD_LIBSND=OFF -DBUILD_LIBTAR=OFF -DBUILD_FFTS=ON -DBUILD_NVOF=OFF -DBUILD_NVDEC=OFF -DBUILD_NVJPEG=OFF -DBUILD_NVJPEG2K=OFF -DBUILD_NVML=OFF\
+#       -DVERBOSE_LOGS=OFF -DWERROR=OFF -DBUILD_WITH_ASAN=OFF -DBUILD_JPEG_TURBO=ON -DProtobuf_PROTOC_EXECUTABLE=/usr/local/bin/protoc .. \
+#    && make -j$(nproc) \
+#    && make install \
+#    && python3 -m pip install dali/python/ \
+#    && mv /usr/local/DALI/build/dali/python/nvidia/dali /tmp/dali \
+#    && rm -rf /usr/local/DALI \
+#    && mkdir -p /usr/local/DALI/build/dali/python/nvidia/ \
+#    && mv /tmp/dali /usr/local/DALI/build/dali/python/nvidia/; fi
 
 # Needed for Mitten
 RUN python3 -m pip uninstall -y pic-c
 
 # Install Mitten
 WORKDIR /tmp
-RUN python3 -m pip install /tmp/nvmitten-${MITTEN_VER}-cp38-cp38-linux_aarch64.whl
+RUN git clone https://github.com/NVIDIA/mitten.git \
+    && cd mitten \
+    && python3 -m pip install .
+#WORKDIR /tmp
+#RUN python3 -m pip install /tmp/nvmitten-${MITTEN_VER}-cp38-cp38-linux_aarch64.whl
 
-RUN wget -nv https://developer.nvidia.com/downloads/embedded/l4t/cupva-algos-gen2-2.0.0-cupva_algo_dlops.deb \
-    && dpkg --add-architecture amd64 \
-    && dpkg -i cupva-algos-gen2-2.0.0-cupva_algo_dlops.deb
+#RUN wget -nv https://developer.nvidia.com/downloads/embedded/l4t/cupva-algos-gen2-2.0.0-cupva_algo_dlops.deb \
+#    && dpkg --add-architecture amd64 \
+#    && dpkg -i cupva-algos-gen2-2.0.0-cupva_algo_dlops.deb
 
+ENV LD_LIBRARY_PATH=${CUDA_ROOT}/lib64:${LD_LIBRARY_PATH}
 WORKDIR /work

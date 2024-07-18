@@ -199,7 +199,9 @@ endif # soc check
 DOCKER_FILENAME := Dockerfile.$(ARCH)
 ifeq ($(IS_SOC), 1)
     ifeq ($(SOC_SM), 87)
+	BASE_IMAGE = nvcr.io/nvidia/clara-holoscan/holoscan:v1.0.3-igpu
         DOCKER_FILENAME = Dockerfile.orin
+	CUDA_VER := 12.2
     endif
 endif
 

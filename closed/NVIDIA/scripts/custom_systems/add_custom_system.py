@@ -246,8 +246,9 @@ def yes_no_prompt(message, default=True):
         raise ValueError(f"Invalid option for default prompt choice: {default}")
 
     resp = None
-    while resp is None or resp.lower() not in choices:
+    while resp is None or resp not in choices:
         resp = input(f"{message} {choice_str}: ")
+        resp = resp.lower()
 
     if resp == "":
         return default

@@ -140,7 +140,7 @@ PLUGINS := NMSOptPlugin RNNTOptPlugin pixelShuffle3DPlugin conv3D1X1X1K4Plugin c
 ifneq ($(IS_SOC), 1)
     PLUGINS += DLRMv2EmbeddingLookupPlugin
 else
-	PLUGINS += NMSPVAPlugin
+	#PLUGINS += NMSPVAPlugin
 endif
 PLUGIN_TARGETS := $(addprefix plugin., $(PLUGINS))
 

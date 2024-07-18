@@ -123,6 +123,7 @@ SKIP_DRIVER_CHECK ?= 0
 MIN_DRIVER_VER := 515
 ifeq ($(IS_SOC)$(USE_CPU)$(USE_INFERENTIA)$(SKIP_DRIVER_CHECK), 0000)
     DRIVER_VER_MAJOR ?= $(shell nvidia-smi | /bin/grep -Eo 'Driver Version: [+-]?[0-9]+' | awk -F ' ' '{print $$NF}')
+    @echo "Detected driver version:" $DRIVER_VER_MAJOR
     # Check driver version and launch the appropriate container.
     ifeq ($(shell if [ $(DRIVER_VER_MAJOR) -ge $(MIN_DRIVER_VER) ]; then echo true; else echo false; fi), true)
         CUDA_VER := 12.2

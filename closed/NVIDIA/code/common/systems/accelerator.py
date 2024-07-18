@@ -48,7 +48,7 @@ NV_GPU_INFO_QUERY_FIELDS: Tuple[str, ...] = (
     "mig.mode.current",
 )
 
-NVIDIA_SMI_GPU_REGEX = re.compile(r"GPU (\d+): ([\w\- ]+) \(UUID: (GPU-[0-9a-f\-]+)\)")
+NVIDIA_SMI_GPU_REGEX = re.compile(r"GPU (\d+): ([\w\- ]+\(?\w*\)?) \(UUID: ([GPU-]?[0-9a-f\-]+)\)")
 """
 re.Pattern: Regex to match nvidia-smi output for GPU information
             match(1) - GPU index
@@ -341,7 +341,7 @@ class GPU(Accelerator):
         gpu_fields = next(GPU_INFO_SOURCE)
         name = gpu_fields["gpu_name"]
         total_mem = gpu_fields["memory.total"]
-        accelerator_type = AcceleratorType.Integrated if total_mem is None else AcceleratorType.Discrete
+        accelerator_type = AcceleratorType.Integrated if total_mem in (None, "", "[N/A]", "[Insufficient Permissions]") else AcceleratorType.Discrete
         pci_id = gpu_fields["pci.device_id"]
         max_power_limit = gpu_fields["power.max_limit"]
         compute_sm = gpu_fields["compute_sm"]

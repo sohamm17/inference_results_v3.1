@@ -526,167 +526,169 @@ else()
         )
 
         ######### RNN-T HARNESS ########
-        execute_process(COMMAND echo "Building RNN-T harness...")
+	if (NOT ${IS_SOC})
+		execute_process(COMMAND echo "Building RNN-T harness...")
 
-        get_dali_paths(DALI_INCLUDE_DIR DALI_LIB_DIR DALI_LIBRARIES)
+		get_dali_paths(DALI_INCLUDE_DIR DALI_LIB_DIR DALI_LIBRARIES)
 
-        message(STATUS "DALI libraries DIR: " ${DALI_LIB_DIR})
-        message(STATUS "DALI include DIR: " ${DALI_INCLUDE_DIR})
+		message(STATUS "DALI libraries DIR: " ${DALI_LIB_DIR})
+		message(STATUS "DALI include DIR: " ${DALI_INCLUDE_DIR})
 
-        message(STATUS "DALI linked libraries: " ${DALI_LIBRARIES})
+		message(STATUS "DALI linked libraries: " ${DALI_LIBRARIES})
 
-        add_executable(harness_rnnt
-            harness_rnnt/main_rnnt.cc
-            harness_rnnt/rnnt_kernels.cu
-            common/logger.cpp
-        )
+		add_executable(harness_rnnt
+		    harness_rnnt/main_rnnt.cc
+		    harness_rnnt/rnnt_kernels.cu
+		    common/logger.cpp
+		)
 
-        # Add gencode compilation option for SOC (i.e. Orin)
-        if (${IS_SOC})
-            message(STATUS "Compiling RNNT harness for SM${SOC_SM}.")
-            target_compile_options(harness_rnnt PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: -gencode arch=compute_${SOC_SM},code=sm_${SOC_SM}>)
-        endif()
+		# Add gencode compilation option for SOC (i.e. Orin)
+		if (${IS_SOC})
+		    message(STATUS "Compiling RNNT harness for SM${SOC_SM}.")
+		    target_compile_options(harness_rnnt PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: -gencode arch=compute_${SOC_SM},code=sm_${SOC_SM}>)
+		endif()
 
-        target_link_directories(harness_rnnt PRIVATE ${DALI_LIB_DIR})
+		target_link_directories(harness_rnnt PRIVATE ${DALI_LIB_DIR})
 
-        target_link_libraries(harness_rnnt
-            nvinfer
-            nvinfer_plugin
-            gflags
-            glog
-            ${CUDA_LIBRARIES}
-            ${LOADGEN_LIB}
-            ${DALI_LIBRARIES}
-        )
+		target_link_libraries(harness_rnnt
+		    nvinfer
+		    nvinfer_plugin
+		    gflags
+		    glog
+		    ${CUDA_LIBRARIES}
+		    ${LOADGEN_LIB}
+		    ${DALI_LIBRARIES}
+		)
 
-        target_include_directories(harness_rnnt
-            PUBLIC
-                ${CUDA_INCLUDE_DIRS}
-                ${LOADGEN_INCLUDE_DIR}
-                ${LWIS_INCLUDE_DIR}
-                ${DALI_INCLUDE_DIR}
-                common
-                harness_rnnt
-        )
+		target_include_directories(harness_rnnt
+		    PUBLIC
+			${CUDA_INCLUDE_DIRS}
+			${LOADGEN_INCLUDE_DIR}
+			${LWIS_INCLUDE_DIR}
+			${DALI_INCLUDE_DIR}
+			common
+			harness_rnnt
+		)
 
-        ######### BERT HARNESS ########
-        execute_process(COMMAND echo "Building BERT harness...")
-        add_executable(harness_bert
-            harness_bert/main_bert.cc
-            harness_bert/bert_server.cc
-            harness_bert/bert_core_vs.cc
-            common/logger.cpp
-        )
+		######### BERT HARNESS ########
+		execute_process(COMMAND echo "Building BERT harness...")
+		add_executable(harness_bert
+		    harness_bert/main_bert.cc
+		    harness_bert/bert_server.cc
+		    harness_bert/bert_core_vs.cc
+		    common/logger.cpp
+		)
 
-        target_link_libraries(harness_bert
-            nvinfer
-            nvinfer_plugin
-            gflags
-            glog
-            ${CUDA_LIBRARIES}
-            ${LOADGEN_LIB}
-        )
+		target_link_libraries(harness_bert
+		    nvinfer
+		    nvinfer_plugin
+		    gflags
+		    glog
+		    ${CUDA_LIBRARIES}
+		    ${LOADGEN_LIB}
+		)
 
-        target_include_directories(harness_bert
-            PUBLIC
-                ${CUDA_INCLUDE_DIRS}
-                ${LOADGEN_INCLUDE_DIR}
-                ${LWIS_INCLUDE_DIR}
-                common
-                harness_bert
-        )
+		target_include_directories(harness_bert
+		    PUBLIC
+			${CUDA_INCLUDE_DIRS}
+			${LOADGEN_INCLUDE_DIR}
+			${LWIS_INCLUDE_DIR}
+			common
+			harness_bert
+		)
 
-        ######### DLRMv2 HARNESS ########
-        if (${IS_SOC})
-            execute_process(COMMAND echo "Skipping DLRMv2 harness for SoC system")
-        else()
-            execute_process(COMMAND echo "Building DLRMv2 harness...")
-            add_executable(harness_dlrm_v2
-                    harness_dlrm_v2/main_dlrm_v2.cpp
-                    harness_dlrm_v2/dlrm_v2_server.cpp
-                    harness_dlrm_v2/batch_maker.cpp
-                    harness_dlrm_v2/dlrm_v2_kernels.cu
-                    common/logger.cpp
-            )
+		######### DLRMv2 HARNESS ########
+		if (${IS_SOC})
+		    execute_process(COMMAND echo "Skipping DLRMv2 harness for SoC system")
+		else()
+		    execute_process(COMMAND echo "Building DLRMv2 harness...")
+		    add_executable(harness_dlrm_v2
+			    harness_dlrm_v2/main_dlrm_v2.cpp
+			    harness_dlrm_v2/dlrm_v2_server.cpp
+			    harness_dlrm_v2/batch_maker.cpp
+			    harness_dlrm_v2/dlrm_v2_kernels.cu
+			    common/logger.cpp
+		    )
 
-            target_link_libraries(harness_dlrm_v2
-                    nvinfer
-                    nvinfer_plugin
-                    gflags
-                    glog
-                    ${CUDA_LIBRARIES}
-                    ${LOADGEN_LIB}
-                    ${NV_TOOLS_EXT_LIB}
-                    numa
-            )
+		    target_link_libraries(harness_dlrm_v2
+			    nvinfer
+			    nvinfer_plugin
+			    gflags
+			    glog
+			    ${CUDA_LIBRARIES}
+			    ${LOADGEN_LIB}
+			    ${NV_TOOLS_EXT_LIB}
+			    numa
+		    )
 
-            target_include_directories(harness_dlrm_v2
-                    PUBLIC
-                        ${CUDA_INCLUDE_DIRS}
-                        ${LOADGEN_INCLUDE_DIR}
-                        ${LWIS_INCLUDE_DIR}
-                        common
-                        harness_dlrm_v2
-            )
-        endif()
+		    target_include_directories(harness_dlrm_v2
+			    PUBLIC
+				${CUDA_INCLUDE_DIRS}
+				${LOADGEN_INCLUDE_DIR}
+				${LWIS_INCLUDE_DIR}
+				common
+				harness_dlrm_v2
+		    )
+		endif()
 
-        ######### GPT HARNESS ########
-        # SOC doesn't run GPT
-        if (${BUILD_TRTLLM})
-            if (${IS_SOC})
-                execute_process(COMMAND echo "Skipping GPT harness for SoC system")
-            else()
-                execute_process(COMMAND echo "Building GPT harness...")
-                find_package(MPI REQUIRED)
-                # Set the path to the NCCL
-                unset(NCCL_LIB CACHE)
-                find_library(NCCL_LIB NAMES libnccl.so PATHS /usr/lib/)
-                unset(NCCL_INCLUDE_DIRS CACHE)
-                set(NCCL_INCLUDE_DIRS /usr/include/nccl)
-                # Set the path to the TRTLLM
-                unset(TRTLLM_CPP_DIR CACHE)
-                set(TRTLLM_CPP_DIR ${TRTLLM_DIR}/cpp)
-                message(STATUS "TRTLLM_CPP_DIR path: " ${TRTLLM_CPP_DIR})
-                unset(TRTLLM_LIB CACHE)
-                find_library(TRTLLM_LIB NAMES libtensorrt_llm.so PATHS ${TRTLLM_CPP_DIR}/build/tensorrt_llm/)
-                message(STATUS "TRTLLM_LIB path: " ${TRTLLM_LIB})
-                unset(TRTLLM_INCLUDE_DIR CACHE)
-                set(TRTLLM_INCLUDE_DIR ${TRTLLM_CPP_DIR}/include)
+		######### GPT HARNESS ########
+		# SOC doesn't run GPT
+		if (${BUILD_TRTLLM})
+		    if (${IS_SOC})
+			execute_process(COMMAND echo "Skipping GPT harness for SoC system")
+		    else()
+			execute_process(COMMAND echo "Building GPT harness...")
+			find_package(MPI REQUIRED)
+			# Set the path to the NCCL
+			unset(NCCL_LIB CACHE)
+			find_library(NCCL_LIB NAMES libnccl.so PATHS /usr/lib/)
+			unset(NCCL_INCLUDE_DIRS CACHE)
+			set(NCCL_INCLUDE_DIRS /usr/include/nccl)
+			# Set the path to the TRTLLM
+			unset(TRTLLM_CPP_DIR CACHE)
+			set(TRTLLM_CPP_DIR ${TRTLLM_DIR}/cpp)
+			message(STATUS "TRTLLM_CPP_DIR path: " ${TRTLLM_CPP_DIR})
+			unset(TRTLLM_LIB CACHE)
+			find_library(TRTLLM_LIB NAMES libtensorrt_llm.so PATHS ${TRTLLM_CPP_DIR}/build/tensorrt_llm/)
+			message(STATUS "TRTLLM_LIB path: " ${TRTLLM_LIB})
+			unset(TRTLLM_INCLUDE_DIR CACHE)
+			set(TRTLLM_INCLUDE_DIR ${TRTLLM_CPP_DIR}/include)
 
-                add_executable(harness_gpt
-                    harness_gpt/main_gpt.cc
-                    harness_gpt/gpt_server.cc
-                    harness_gpt/gpt_core.cc
-                    harness_gpt/gpt_utils.cc
-                    common/logger.cpp
-                )
+			add_executable(harness_gpt
+			    harness_gpt/main_gpt.cc
+			    harness_gpt/gpt_server.cc
+			    harness_gpt/gpt_core.cc
+			    harness_gpt/gpt_utils.cc
+			    common/logger.cpp
+			)
 
-                target_link_libraries(harness_gpt
-                    nvinfer
-                    nvinfer_plugin
-                    gflags
-                    glog
-                    ${MPI_C_LIBRARIES}
-                    ${MPI_CXX_LIBRARIES}
-                    ${NCCL_LIB}
-                    ${TRTLLM_LIB}
-                    ${CUDA_LIBRARIES}
-                    ${LOADGEN_LIB}
-                )
+			target_link_libraries(harness_gpt
+			    nvinfer
+			    nvinfer_plugin
+			    gflags
+			    glog
+			    ${MPI_C_LIBRARIES}
+			    ${MPI_CXX_LIBRARIES}
+			    ${NCCL_LIB}
+			    ${TRTLLM_LIB}
+			    ${CUDA_LIBRARIES}
+			    ${LOADGEN_LIB}
+			)
 
-                target_include_directories(harness_gpt
-                    PUBLIC
-                        ${MPI_C_INCLUDE_PATH}
-                        ${NCCL_INCLUDE_DIRS}
-                        ${CUDA_INCLUDE_DIRS}
-                        ${LOADGEN_INCLUDE_DIR}
-                        ${LWIS_INCLUDE_DIR}
-                        ${TRTLLM_CPP_DIR}
-                        ${TRTLLM_INCLUDE_DIR}
-                        common
-                        harness_gpt
-                )
-            endif()
-        endif()
+			target_include_directories(harness_gpt
+			    PUBLIC
+				${MPI_C_INCLUDE_PATH}
+				${NCCL_INCLUDE_DIRS}
+				${CUDA_INCLUDE_DIRS}
+				${LOADGEN_INCLUDE_DIR}
+				${LWIS_INCLUDE_DIR}
+				${TRTLLM_CPP_DIR}
+				${TRTLLM_INCLUDE_DIR}
+				common
+				harness_gpt
+			)
+		    endif()
+		endif()
+	endif()
     endif()
 endif()
