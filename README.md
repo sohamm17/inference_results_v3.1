@@ -34,7 +34,7 @@ SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make download_data IS_SOC=1 S
 5. Download Models
 
 ```
-SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make ^Cwnload_model BENCHMARKS="resnet50 retinanet" IS_SOC=1 SOC_SM=87
+SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make download_model BENCHMARKS="resnet50 retinanet" IS_SOC=1 SOC_SM=87
 ```
 
 6. Build the code
