@@ -14,8 +14,15 @@ Create empty directories:
 mkdir $MLPERF_SCRATCH_PATH/data $MLPERF_SCRATCH_PATH/models $MLPERF_SCRATCH_PATH/preprocessed_data
 ```
 
-3. Launch the container (this assumes that you have access to Holoscan NGC container)
+3. Launch the container (this assumes that you have access to Holoscan NGC container, if not follow steps here: https://docs.nvidia.com/launchpad/ai/base-command-coe/latest/bc-coe-docker-basics-step-02.html)
 
+**clone this repo and go inside the NVIDIA directory**
+```
+git clone git@github.com:sohamm17/inference_results_v3.1.git
+cd inference_results_v3.1/closed/NVIDIA
+```
+
+**launch the container:**
 ```
 SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 OUTSIDE_MLPINF_ENV=1 make prebuild IS_SOC=1 SOC_SM=87 DOCKER_ARGS="--security-opt systempaths=unconfined"
 ```
