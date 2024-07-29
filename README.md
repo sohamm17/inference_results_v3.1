@@ -27,6 +27,22 @@ cd inference_results_v3.1/closed/NVIDIA
 SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 OUTSIDE_MLPINF_ENV=1 make prebuild IS_SOC=1 SOC_SM=87 DOCKER_ARGS="--security-opt systempaths=unconfined"
 ```
 
+Run the following commands to link all the directories inside the container (this needs to be done every time you are outside the container): 
+
+```
+$ echo $MLPERF_SCRATCH_PATH
+$ ls -al $MLPERF_SCRATCH_PATH
+$ make clean
+$ make link_dirs
+$ ls -al build/  # You should see output like the following:
+total 8
+drwxrwxr-x  2 user group 4096 Jun 24 18:49 .
+drwxrwxr-x 15 user group 4096 Jun 24 18:49 ..
+lrwxrwxrwx  1 user group   35 Jun 24 18:49 data -> $MLPERF_SCRATCH_PATH/data
+lrwxrwxrwx  1 user group   37 Jun 24 18:49 models -> $MLPERF_SCRATCH_PATH/models
+lrwxrwxrwx  1 user group   48 Jun 24 18:49 preprocessed_data -> $MLPERF_SCRATCH_PATH/preprocessed_data
+```
+
 4. Download datasets
 
 `resnet50` download is a manual process
