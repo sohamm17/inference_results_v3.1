@@ -43,7 +43,13 @@ lrwxrwxrwx  1 user group   37 Jun 24 18:49 models -> $MLPERF_SCRATCH_PATH/models
 lrwxrwxrwx  1 user group   48 Jun 24 18:49 preprocessed_data -> $MLPERF_SCRATCH_PATH/preprocessed_data
 ```
 
-4. Download datasets
+4. Build the code
+
+```
+SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make build BENCHMARKS="resnet50 retinanet" IS_SOC=1 SOC_SM=87
+```
+
+5. Download datasets
 
 `resnet50` download is a manual process
 `ResNet50`: Download the ImageNet 2012 Validation Set and unzip the files to `$MLPERF_SCRATCH_PATH/data/imagenet/`
@@ -54,16 +60,10 @@ Inside the container:
 SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make download_data IS_SOC=1 SOC_SM=87 BENCHMARKS="retinanet"
 ```
 
-5. Download Models
+6. Download Models
 
 ```
 SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make download_model BENCHMARKS="resnet50 retinanet" IS_SOC=1 SOC_SM=87
-```
-
-6. Build the code
-
-```
-SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make build BENCHMARKS="resnet50 retinanet" IS_SOC=1 SOC_SM=87
 ```
 
 7. Run the benchmarks
