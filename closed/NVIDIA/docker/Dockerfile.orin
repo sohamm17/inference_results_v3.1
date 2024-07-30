@@ -96,6 +96,9 @@ RUN apt install -y libfreetype6-dev libpng-dev  \
     && apt install -y libatlas3-base libopenblas-base \
     && apt install -y git-lfs && git-lfs install
 
++# For downloading Retinanet dataset
++RUN python3 -m pip install boto3
+
 # Setup environment variables for pycuda
 ENV CUDA_ROOT=/usr/local/cuda
 ENV CUDA_INC_DIR=${CUDA_ROOT}/include
