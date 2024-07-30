@@ -68,7 +68,15 @@ SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make download_model BENCHMARK
 
 7. Run the benchmarks
 
+For a quick run of the benchmarks:
 ```
+make run RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" IS_SOC=1 SOC_SM=87
+```
+
+The above command is the combination of the following two steps:
+
+```
+make generate_engines RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" IS_SOC=1 SOC_SM=87
 make run_harness RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" IS_SOC=1 SOC_SM=87
 ```
 
