@@ -69,7 +69,7 @@ SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make download_model BENCHMARK
 7. Preprocess Data
 
 ```
-SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make preprocess_data RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" IS_SOC=1 SOC_SM=87
+SKIP_DRIVER_CHECK=1 EXTERNAL_USER=1 PARTNER_DROP=0 make preprocess_data BENCHMARKS="resnet50 retinanet" IS_SOC=1 SOC_SM=87
 ```
 
 8. Run the benchmarks
