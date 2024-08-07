@@ -174,14 +174,14 @@ EXTERNAL_USER=1 PARTNER_DROP=0 make preprocess_data BENCHMARKS="resnet50 retinan
 
 For a quick run of the benchmarks:
 ```
-make run RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream,multistream --fast" SOC_SM=87
+make run RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SOC_SM=87
 ```
 
 The above command is the combination of the following two steps:
 
 ```
-make generate_engines RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream,multistream --fast" SOC_SM=87
-make run_harness RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream,multistream --fast" SOC_SM=87
+make generate_engines RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SOC_SM=87
+make run_harness RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SOC_SM=87
 ```
 
 You can remove `--fast` variable to get the full benchmark.
