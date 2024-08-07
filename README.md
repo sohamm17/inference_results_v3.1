@@ -122,7 +122,7 @@ cd inference_results_v3.1/closed/NVIDIA
 The command below will take tens of minutes at least.
 
 ```
-EXTERNAL_USER=1 PARTNER_DROP=0 OUTSIDE_MLPINF_ENV=1 make prebuild SOC_SM=87 DOCKER_ARGS="--security-opt systempaths=unconfined"
+EXTERNAL_USER=1 PARTNER_DROP=0 OUTSIDE_MLPINF_ENV=1 make prebuild SM=87 DOCKER_ARGS="--security-opt systempaths=unconfined"
 ```
 
 Run the following commands to link all the directories inside the container (this needs to be done every time you are outside the container and you come back in): 
@@ -144,7 +144,7 @@ lrwxrwxrwx  1 user group   48 Jun 24 18:49 preprocessed_data -> $MLPERF_SCRATCH_
 4. Build the code
 
 ```
-EXTERNAL_USER=1 PARTNER_DROP=0 make build BENCHMARKS="resnet50 retinanet" SOC_SM=87
+EXTERNAL_USER=1 PARTNER_DROP=0 make build BENCHMARKS="resnet50 retinanet" SM=87
 ```
 
 5. Download datasets
@@ -155,33 +155,33 @@ EXTERNAL_USER=1 PARTNER_DROP=0 make build BENCHMARKS="resnet50 retinanet" SOC_SM
 `retinanet` can be downloaded via the following script
 ```
 Inside the container:
-EXTERNAL_USER=1 PARTNER_DROP=0 make download_data SOC_SM=87 BENCHMARKS="retinanet"
+EXTERNAL_USER=1 PARTNER_DROP=0 make download_data SM=87 BENCHMARKS="retinanet"
 ```
 
 6. Download Models
 
 ```
-EXTERNAL_USER=1 PARTNER_DROP=0 make download_model BENCHMARKS="resnet50 retinanet" SOC_SM=87
+EXTERNAL_USER=1 PARTNER_DROP=0 make download_model BENCHMARKS="resnet50 retinanet" SM=87
 ```
 
 7. Preprocess Data
 
 ```
-EXTERNAL_USER=1 PARTNER_DROP=0 make preprocess_data BENCHMARKS="resnet50 retinanet" SOC_SM=87
+EXTERNAL_USER=1 PARTNER_DROP=0 make preprocess_data BENCHMARKS="resnet50 retinanet" SM=87
 ```
 
 8. Run the benchmarks
 
 For a quick run of the benchmarks:
 ```
-make run RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SOC_SM=87
+make run RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SM=87
 ```
 
 The above command is the combination of the following two steps:
 
 ```
-make generate_engines RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SOC_SM=87
-make run_harness RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SOC_SM=87
+make generate_engines RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SM=87
+make run_harness RUN_ARGS="--benchmarks=resnet50,retinanet --scenarios=singlestream --fast" SM=87
 ```
 
 You can remove `--fast` variable to get the full benchmark.
