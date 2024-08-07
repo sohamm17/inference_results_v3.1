@@ -261,4 +261,6 @@ RUN python3 -m pip install colored
 # install RUST
 RUN apt install -y cargo
 
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y
+
 WORKDIR /work

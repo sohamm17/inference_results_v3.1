@@ -48,7 +48,9 @@ NV_GPU_INFO_QUERY_FIELDS: Tuple[str, ...] = (
     "mig.mode.current",
 )
 
-NVIDIA_SMI_GPU_REGEX = re.compile(r"GPU (\d+): ([\w\- ]+\(?\w*\)?) \(UUID: ([GPU-]?[0-9a-f\-]+)\)")
+NVIDIA_SMI_GPU_REGEX = re.compile(r"GPU (\d+): ([\w\- ]+) \(UUID: (GPU-[0-9a-f\-]+)\)")
+
+NVIDIA_SMI_Orin_GPU_REGEX = re.compile(r"GPU (\d+): ([\w\- ]+\(?\w*\)?) \(UUID: ([GPU-]?[0-9a-f\-]+)\)")
 """
 re.Pattern: Regex to match nvidia-smi output for GPU information
             match(1) - GPU index
@@ -117,7 +119,9 @@ def get_accelerator_info(force_no_gpu_cmd: bool = False) -> Dict[Tuple[int, str,
     current_gpu = None
     for i in info:
         # fill GPU
-        g = NVIDIA_SMI_GPU_REGEX.match(i)
+        g = NVIDIA_SMI_Orin_GPU_REGEX.match(i)
+        if not g:
+            g = NVIDIA_SMI_GPU_REGEX.match(i)
         if g:
             gpu_id = int(g.group(1))
             gpu_name = g.group(2)
