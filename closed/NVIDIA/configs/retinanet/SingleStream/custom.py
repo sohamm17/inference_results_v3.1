@@ -38,3 +38,16 @@ class IGX_ORIN_DGPU_Triton(IGX_ORIN_DGPU):
     use_triton = True
 
 
+@ConfigRegistry.register(HarnessType.LWIS, AccuracyTarget.k_99, PowerSetting.MaxP)
+class IGX_ORIN_ADA6000(SingleStreamGPUBaseConfig):
+    system = KnownSystem.IGX_Orin_Ada6000
+
+    workspace_size = 30000000000
+    use_graphs = True
+    single_stream_expected_latency_ns = 19000000
+    gpu_copy_streams = 2
+
+@ConfigRegistry.register(HarnessType.Triton, AccuracyTarget.k_99, PowerSetting.MaxP)
+class IGX_ORIN_ADA6000_Triton(IGX_ORIN_ADA6000):
+    use_triton = True
+
