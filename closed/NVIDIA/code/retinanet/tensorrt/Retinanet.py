@@ -40,6 +40,8 @@ from code.common.fields import Fields
 from code.common.mitten_compat import ArgDiscarder
 from code.common.systems.system_list import DETECTED_SYSTEM
 
+import torch
+TORCH_VERSION = '.'.join(torch.__version__.split('.')[:2])
 RetinanetEntropyCalibrator = import_module("code.retinanet.tensorrt.calibrator").RetinanetEntropyCalibrator
 RetinanetGraphSurgeon = import_module("code.retinanet.tensorrt.retinanet_graphsurgeon").RetinanetGraphSurgeon
 
@@ -155,7 +157,7 @@ class RetinanetEngineBuilderOp(CalibratableTensorRTEngine,
                  # TODO: Legacy value - Remove after refactor is done.
                  config_ver: str = "default",
                  # TODO: This should be a relative path within the ScratchSpace.
-                 model_path: str = "build/models/retinanet-resnext50-32x4d/retinanet-fpn-torch2.3-postprocessed.onnx",
+                 model_path: str = f"build/models/retinanet-resnext50-32x4d/retinanet-fpn-torch{TORCH_VERSION}-postprocessed.onnx",
                  # Override the normal default values
                  workspace_size: int = 8 << 30,
                  calib_batch_size: int = 10,
